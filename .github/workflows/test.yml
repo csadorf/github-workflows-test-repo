@@ -54,4 +54,4 @@ jobs:
 
     - name: on-fail-2
       if: failure() && steps.fail_step.outcome == 'Failure'
-      run: echo "fail step concluded failed"
+      run: echo "::error ::The fail step failed!"
