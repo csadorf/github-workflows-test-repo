@@ -43,5 +43,5 @@ jobs:
       run: echo "$STEPS_CONTEXT"
 
     - name: on-fail
-      if: steps.fail_step.outcome == "Failure"
+      if: steps.fail_step.outcome == 'Failure'
       run: echo "fail step failed"
