@@ -38,5 +38,5 @@ jobs:
 
     - name: show env
       env:
-        STEPS_CONTEXT: ${{ toJson(steps.failing-command) }}
+        STEPS_CONTEXT: ${{ toJson(steps.failing-command.outcome) }}
       run: echo "$STEPS_CONTEXT"
