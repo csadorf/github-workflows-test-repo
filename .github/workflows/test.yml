@@ -42,26 +42,13 @@ jobs:
         STEPS_CONTEXT: ${{ toJson(steps.fail_step.outcome) }}
       run: echo "$STEPS_CONTEXT"
 
+    - name: react to success
+      if: steps.fail_step.outcome == 'Success'
+      run: echo "step succeded"
+
     - name: on-fail
       if: steps.fail_step.outcome == 'Failure'
       run: echo "fail step failed"
 
-    - name: actually-fail
-      run: exit 1
-
-  other-job:
-
-    needs: continue-on-error
-    if: needs.continue-on-error.result == 'failure'
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-    - name: show context
-      env:
-        NEEDS_CONTEXT: ${{ toJson(needs) }}
-      run: echo "$NEEDS_CONTEXT"
-
-    - name: just echo
-      run: echo "looks like that other job failed"
+    - name: second-fail-step
+      run: echo "step still failed"
