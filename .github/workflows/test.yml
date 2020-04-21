@@ -31,3 +31,16 @@ jobs:
       run: |
         echo Add other actions to build,
         echo test, and deploy your project.
+
+  continue-on-error:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: failing-command
+      continue-on-error: true
+      run: exit 1
+
+    - name: show env
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
