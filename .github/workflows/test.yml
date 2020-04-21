@@ -65,10 +65,11 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: add a file
-      run: date > date.txt
+      run: |
+        echo 'hello' > hello.txt
 
     - name: add file to repo
-      run: git add date.txt
+      run: git add hello.txt
 
     - name: Show debug info
       env:
