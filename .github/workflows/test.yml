@@ -45,3 +45,12 @@ jobs:
     - name: on-fail
       if: steps.fail_step.outcome == 'Failure'
       run: echo "fail step failed"
+
+  other-job:
+    needs: continue-on-error
+    if: needs.continue-on-error.result == 'Failure'
+
+    steps:
+
+    - name: just echo
+      run: echo "looks like that other job failed"
