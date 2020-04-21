@@ -47,8 +47,11 @@ jobs:
       run: echo "fail step failed"
 
   other-job:
+
     needs: continue-on-error
     if: needs.continue-on-error.result == 'Failure'
+
+    runs-on: ubuntu-latest
 
     steps:
 
