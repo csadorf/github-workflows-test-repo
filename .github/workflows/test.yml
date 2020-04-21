@@ -74,6 +74,13 @@ jobs:
         git add date.txt
         git commit -m "Update the date file." -a || echo "Nothing to update."
 
+    - name: Show debug info
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        git status
+        echo "${GITHUB_CONTEXT}"
+
     - name: Push changes
       uses: ad-m/github-push-action@v0.5.0
       with:
