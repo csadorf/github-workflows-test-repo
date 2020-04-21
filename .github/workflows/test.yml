@@ -34,8 +34,7 @@ jobs:
     steps:
     - name: failing-command
       id: fail_step
-      continue-on-error: true
-      run: exit 0
+      run: exit 1
 
     - name: show context
       env:
