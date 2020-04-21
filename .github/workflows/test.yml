@@ -33,10 +33,11 @@ jobs:
 
     steps:
     - name: failing-command
+      id: fail_step
       continue-on-error: true
       run: exit 1
 
     - name: show env
       env:
-        STEPS_CONTEXT: ${{ toJson(steps.failing-command.outcome) }}
+        STEPS_CONTEXT: ${{ toJson(steps.fail_step.outcome) }}
       run: echo "$STEPS_CONTEXT"
