@@ -49,6 +49,8 @@ jobs:
   other-job:
 
     needs: continue-on-error
+    if: needs.continue-on-error.result == 'success'
+
     runs-on: ubuntu-latest
 
     steps:
