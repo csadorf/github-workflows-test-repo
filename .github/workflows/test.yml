@@ -51,3 +51,7 @@ jobs:
 
     - name: second-fail-step
       run: echo "step still failed"
+
+    - name: on-fail-2
+      if: steps.fail_step.conclusion == 'Failure'
+      run: echo "fail step concluded failed"
