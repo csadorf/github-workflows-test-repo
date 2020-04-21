@@ -46,10 +46,13 @@ jobs:
       if: steps.fail_step.outcome == 'Failure'
       run: echo "fail step failed"
 
+    - name: actually-fail
+      run: exit 1
+
   other-job:
 
     needs: continue-on-error
-    if: needs.continue-on-error.result == 'success'
+    if: needs.continue-on-error.result == 'failure'
 
     runs-on: ubuntu-latest
 
