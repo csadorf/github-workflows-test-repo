@@ -68,8 +68,25 @@ jobs:
       run: git status
 
     - name: Create Pull Request with Changes
+      id: create_pr
       if: steps.check_step.outcome == 'Failure'
       uses: peter-evans/create-pull-request@v2
       with:
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+
+    - name: Create PR comment on success
+      if: steps.create_pr.outcome == 'Success'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.number }}
+        body: |
+          Created PR to update file: #${{ steps.create_pr.outputs.pr_number }}
+
+    - name: Create PR comment on failure
+      if: steps.create_pr.outcome == 'Failure'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.number }}
+        body: |
+          Unable to create PR to update file, please do so manually!
