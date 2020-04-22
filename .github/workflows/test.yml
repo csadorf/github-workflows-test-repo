@@ -53,7 +53,7 @@ jobs:
 # Now we try to checkout the base branch.
     - name: checkout base branch
       if: steps.check_step.outcome == 'Failure'
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
       with:
         clean: true
         ref: ${{ github.head_ref }}
