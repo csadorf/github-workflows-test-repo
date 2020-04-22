@@ -34,15 +34,15 @@ jobs:
 
     steps:
 
+# First check out the merge commit.
+    - uses: actions/checkout@v2
+
     - name: Show debug info
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
         git status
         echo "${GITHUB_CONTEXT}"
-
-# First check out the merge commit.
-    - uses: actions/checkout@v2
 
 # Run the 'check' that for this test always fails.
     - name: check (always fails)
