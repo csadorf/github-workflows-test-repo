@@ -28,48 +28,11 @@ jobs:
         echo Add other actions to build,
         echo test, and deploy your project.
 
-  continue-on-error:
+  update-if-needed:
+    
     runs-on: ubuntu-latest
 
     steps:
-    - name: failing-command
-      id: fail_step
-      run: exit 1
-
-    - name: show context
-      env:
-        STEPS_CONTEXT: ${{ toJson(steps.fail_step.outcome) }}
-      run: echo "$STEPS_CONTEXT"
-
-    - name: react to success
-      if: steps.fail_step.outcome == 'Success'
-      run: echo "step succeded"
-
-    - name: on-fail
-      if: steps.fail_step.outcome == 'Failure'
-      run: echo "fail step failed"
-
-    - name: second-fail-step
-      run: echo "step still failed"
-
-    - name: on-fail-2
-      if: failure() && steps.fail_step.outcome == 'Failure'
-      run: echo "::error ::The fail step failed!"
-
-  push-some-changes:
-    runs-on: ubuntu-latest
-
-    steps:
-
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
-
-    - name: add a file
-      run: |
-        echo 'hello' > hello.txt
-
-    - name: add file to repo
-      run: git add hello.txt
 
     - name: Show debug info
       env:
@@ -78,7 +41,31 @@ jobs:
         git status
         echo "${GITHUB_CONTEXT}"
 
+# First check out the merge commit.
+    - uses: actions/checkout@v2
+
+# Run the 'check' that for this test always fails.
+    - name: check (always fails)
+      id: check_step
+      continue-on-error: true
+      run: exit 1
+
+# Now we try to checkout the base branch.
+    - name: checkout base branch
+      if: steps.check_step.outcome == 'Failure'
+    - uses: actions/checkout@v2
+      with:
+        clean: true
+        ref: ${{ github.head_ref }}
+
+    - name: update a file
+      if: steps.check_step.outcome == 'Failure'
+      run: |
+        echo date > hello.txt
+        git add hello.txt
+
     - name: Create Pull Request with Changes
+      if: steps.check_step.outcome == 'Failure'
       uses: peter-evans/create-pull-request@v2
       with:
         committer: GitHub <noreply@github.com>
