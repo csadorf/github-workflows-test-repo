@@ -4,11 +4,7 @@ name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [pull_request]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,3 +27,83 @@ jobs:
       run: |
         echo Add other actions to build,
         echo test, and deploy your project.
+
+  update-if-needed:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+
+# First check out the merge commit.
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Show debug info
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: |
+        git status
+        echo "${GITHUB_CONTEXT}"
+
+# Run the 'check' that for this test always fails.
+    - name: check (always fails)
+      id: check_step
+      continue-on-error: true
+      run: exit 1
+
+# Now we try to checkout the base branch.
+    - name: checkout base branch
+      if: steps.check_step.outcome == 'Failure'
+      uses: actions/checkout@v2
+      with:
+        clean: true
+        ref: ${{ github.head_ref }}
+
+    - name: update a file
+      id: update
+      if: steps.check_step.outcome == 'Failure'
+      run: |
+        ./set_msg.py
+        date > hello.txt
+        git add hello.txt
+
+    - name: Create PR comment
+      if: steps.check_step.outcome == 'Failure'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.number }}
+        body: |
+          Message from previous step:
+
+          ${{ steps.update.outputs.msg }}
+
+    - name: Show git status
+      run: git status
+
+    - name: Create Pull Request with Changes
+      id: create_pr
+      if: steps.check_step.outcome == 'Failure'
+      uses: peter-evans/create-pull-request@v2
+      with:
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+
+    - name: Create PR comment on success
+      if: steps.create_pr.outcome == 'Success'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.number }}
+        body: |
+          Created PR to update file: #${{ steps.create_pr.outputs.pr_number }}
+
+    - name: Create PR comment on failure
+      if: steps.create_pr.outcome == 'Failure'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.number }}
+        body: |
+          Unable to create PR to update file, please do so manually!
