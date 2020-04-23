@@ -59,10 +59,20 @@ jobs:
         ref: ${{ github.head_ref }}
 
     - name: update a file
+      id: update
       if: steps.check_step.outcome == 'Failure'
       run: |
+        ./set_date.py
         date > hello.txt
         git add hello.txt
+
+    - name: Create PR comment
+      if: steps.check_step.outcome == 'Failure'
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.number }}
+        body: |
+          The current date-time: ${{ steps.update.date-time }}
 
     - name: Show git status
       run: git status
