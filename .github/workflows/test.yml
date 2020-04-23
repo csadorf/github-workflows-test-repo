@@ -77,7 +77,7 @@ jobs:
       with:
         issue-number: ${{ github.event.number }}
         body: |
-          The current date-time: ${{ steps.update.date-time }}
+          The current date-time: ${{ steps.update.outputs.date-time }}
 
     - name: Show git status
       run: git status
