@@ -67,7 +67,7 @@ jobs:
       id: update
       if: steps.check_step.outcome == 'Failure'
       run: |
-        ./set_date.py
+        ./set_msg.py
         date > hello.txt
         git add hello.txt
 
@@ -77,7 +77,9 @@ jobs:
       with:
         issue-number: ${{ github.event.number }}
         body: |
-          The current date-time: ${{ steps.update.outputs.date-time }}
+          Message from previous step:
+
+          ${{ steps.update.outputs.msg }}
 
     - name: Show git status
       run: git status
